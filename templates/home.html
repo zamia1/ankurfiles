@@ -1,0 +1,21 @@
+
+<h1>Welcome to matchmaking site</h1>
+{% if current_user.is_authenticated and current_user.role == 'admin' %}
+    <a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+{% endif %}
+
+    
+<form method="GET" action={{url}}/upload>
+    <button type="submit" class="btn btn-primary"> Upload a pdf doc</button>
+</form>
+
+<form method="GET" action={{url}}/list_file>
+<button type="submit" class="btn btn-primary"> List them all to access and download </button>
+</form>
+<form method="GET" action={{url}}/delete_file>
+    <button type="submit" class="btn btn-primary"> Delete file</button>
+</form>
+<form method="GET" action={{url}}/logout>
+
+    <button type="submit" class="btn btn-primary"> logout</button>
+</form>

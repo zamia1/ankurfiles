@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <h2>Register</h2>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  <form method="post" action="{{ url_for('register') }}">
+    <label>Username:</label><br>
+    <input type="text" name="username" required><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <label>Confirm Password:</label><br>
+    <input type="password" name="confirm_password" required><br><br>
+    <label>Email:</label>
+    <input type="email" name="email" required>
+    <button type="submit">Register</button>
+
+  </form>
+  {% endblock %} 
