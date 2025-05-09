@@ -51,12 +51,9 @@ bflag=True
 db = client.dataankur
 gender=""
 age=""
-
-ankurfiles_collection = db['ankurfiles']
 users_collection = db['users']
 
-
-ages="Zakat Projects,Self Relience,Scholarships,Treatment,Flood,Blanket,Food"
+ages="Zakat Projects,Self Relience,Scholarship,Treatment,Flood,Blanket,Food"
 agetra=ages.split(',')
 
 admin_user = {
@@ -96,7 +93,7 @@ class User(UserMixin):
 
 def connectToDb(namesp):
     fs = gridfs.GridFS(db,namesp)
-    return db, ankurfiles_collection, fs
+    return db,fs
 
 
 @app.route('/admin')
@@ -242,11 +239,11 @@ def get_file(namef=None,category=None):
     #pdb.set_trace()
     if request.method=="POST":
         category=request.form['category']
-        db, collectn, fs = connectToDb(category)
+        db,fs = connectToDb(category)
         return render_template('get_file.html',url=request.url, names=fs.list(),category=category)
     else:
         if namef is not None:
-            db, collectn, fs = connectToDb(category)    
+            db, fs = connectToDb(category)    
             file = fs.find_one({'filename': namef})
             if file:
                 grid_out = fs.find_one({'filename': namef})
@@ -281,7 +278,7 @@ def delete_file():
         for file in files:
             rs=file.split(',')
             category=rs[0]
-            db, collectn, fs = connectToDb(category)
+            db, fs = connectToDb(category)
             for x in fs.find({'filename':rs[1] }).distinct('_id'):
                 fs.delete(x)
                 print('file' +rs[1] +'is deleted')
@@ -302,10 +299,7 @@ def list_file():
     global agetra
     rs=[]
     files_a={}
-    #pdb.set_trace()
-    for j in agetra:
-        rs.append(j)
-    for i in rs:
+    for i in agetra:
         fs = gridfs.GridFS(db,i)
         if len(fs.list())>0:
             files_a[i]=fs.list()
@@ -330,13 +324,15 @@ def upload():
             mime_type = magic.from_buffer(file_bytes, mime=True)
             file.seek(0)  # Reset file pointer so fs.put() reads the full fil
             if mime_type == 'application/pdf':
-                db, collectn, fs = connectToDb(category)
+                db,  fs = connectToDb(category)
                 file_id = fs.put(file, filename=file.filename)
             elif mime_type and mime_type.startswith('image/'):
-                db, collectn, fs = connectToDb(category)
+                db, fs = connectToDb(category)
                 file_id = fs.put(file, filename=(file.filename ), content_type=mime_type)              
             else:
-                return render_template('upload.html', msgs='Only PDF or image files are allowed')
+                db, fs = connectToDb(category)
+                file_id = fs.put(file, filename=(file.filename ), content_type=mime_type)     
+                #return render_template('upload.html', msgs='Only PDF or image files are allowed')
         return render_template('upload.html',msgs='file is uploaded')
     else:
         return render_template('index.html')
